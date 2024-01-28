@@ -45,6 +45,9 @@ func main() {
 	case "undone":
 		markAsUndone()
 		return
+	case "edit":
+		edit()
+		return
 	case "add":
 	default:
 	}
