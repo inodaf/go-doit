@@ -1,22 +1,70 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
+	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/inodaf/todo/models"
 	"github.com/inodaf/todo/utils"
 )
 
-func add(title string, description string) {
-	// title := flag.String("t", "", "Title of the todo")
-	// description := flag.String("d", "", "Description of the todo")
+func add() {
+	// Start: Spawns the vim process and save the tmp.md file.
+	cmd := exec.Command("vim", TempFileName)
 
-	// flag.Parse()
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
-	// if len(*title) == 0 {
-	// 	fmt.Println("Please provide a title")
-	// 	return
-	// }
+	err := cmd.Run()
+	if err != nil {
+		fmt.Print("Add: \"Editor\" process did not finish successfully")
+		return
+	}
+	// End
+
+	// Start: Read the tmp.txt file and get it's content
+	file, err := os.Open(TempFileName)
+	if err != nil {
+		fmt.Print("Add: Error while opening the temporary file.")
+		return
+	}
+
+	defer os.Remove(TempFileName)
+	defer file.Close()
+
+	fileScanner := bufio.NewScanner(file)
+	fileScanner.Scan()
+
+	// The first line of the file is considered the item "title"
+	// and it is "required" to create a new item.
+	var title string = fileScanner.Text()
+	if len(title) == 0 {
+		fmt.Print("Error: Items must have a title.\n")
+		return
+	}
+
+	// All the subsequent lines are considered the item "description"
+	// and it is "not required" for the creation of the item.
+	//
+	// This also handles line-breaks by appending "\n"
+	// when the line is blank or when reaching it's end.
+	var descriptionBuilder strings.Builder
+	for fileScanner.Scan() {
+		var lineContent string = fileScanner.Text()
+
+		if len(lineContent) == 0 {
+			descriptionBuilder.WriteString("\n")
+			continue
+		}
+
+		descriptionBuilder.WriteString(lineContent + "\n")
+	}
+	var description string = descriptionBuilder.String()
 
 	item := *models.NewItem()
 	item.Title = title
