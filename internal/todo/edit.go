@@ -1,4 +1,4 @@
-package main
+package todo
 
 import (
 	"bufio"
@@ -9,10 +9,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inodaf/todo/utils"
+	"inodaf/todo/utils"
+	"inodaf/todo/internal/config"
 )
 
-func edit() {
+func Edit() {
 	// @TODO: Fallback to last item in case the ID was not specified.
 	if len(os.Args) <= 2 {
 		fmt.Println("Edit: Please specify the item ID\nExample: `$ todo edit 12`")
@@ -28,7 +29,7 @@ func edit() {
 	}
 
 	// Access all the items.
-	items := utils.GetItems(DatabasePath)
+	items := utils.GetItems(config.DatabasePath)
 	if itemID > len(items) {
 		fmt.Println("Edit: The item does not exists.")
 		return
@@ -114,5 +115,5 @@ func edit() {
 		return
 	}
 
-	utils.WriteItems(DatabasePath, data)
+	utils.WriteItems(config.DatabasePath, data)
 }

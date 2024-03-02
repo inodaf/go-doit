@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-)
 
-const DatabasePath = "./store/current.json"
-const TempFileName = "tmp.md"
+	"inodaf/todo/internal/todo"
+)
 
 func main() {
 	if len(os.Args) <= 1 {
@@ -16,26 +15,26 @@ func main() {
 
 	switch os.Args[1] {
 	case "list":
-		list()
+		todo.List()
 		return
 	case "view":
-		view()
+		todo.View()
 		return
 	case "done":
-		markAsDone()
+		todo.MarkAsDone()
 		return
 	case "undone":
-		markAsUndone()
+		todo.MarkAsUndone()
 		return
 	case "edit":
-		edit()
+		todo.Edit()
 		return
 	case "add":
-		add()
-		list()
+		todo.Add()
+		todo.List()
 		return
 	default:
-		list()
+		todo.List()
 		return
 	}
 }

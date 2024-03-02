@@ -1,4 +1,4 @@
-package main
+package todo
 
 import (
 	"encoding/json"
@@ -6,10 +6,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/inodaf/todo/utils"
+	"inodaf/todo/internal/config"
+	"inodaf/todo/utils"
 )
 
-func markAsDone() {
+func MarkAsDone() {
 	if len(os.Args) <= 2 {
 		fmt.Println("Mark as Done: Please specify the item ID\nExample: `$ todo done 12`.")
 		return
@@ -21,7 +22,7 @@ func markAsDone() {
 		return
 	}
 
-	items := utils.GetItems(DatabasePath)
+	items := utils.GetItems(config.DatabasePath)
 	if itemID > len(items) {
 		fmt.Println("View: The item does not exists.")
 		return
@@ -34,11 +35,11 @@ func markAsDone() {
 		panic("Failed to form a JSON")
 	}
 
-	utils.WriteItems(DatabasePath, data)
+	utils.WriteItems(config.DatabasePath, data)
 	utils.PrintItem(&items[itemID], itemID, false)
 }
 
-func markAsUndone() {
+func MarkAsUndone() {
 	if len(os.Args) <= 2 {
 		fmt.Println("Mark as Undone: Please specify the item ID\nExample: `$ todo undone 12`.")
 		return
@@ -50,7 +51,7 @@ func markAsUndone() {
 		return
 	}
 
-	items := utils.GetItems(DatabasePath)
+	items := utils.GetItems(config.DatabasePath)
 	if itemID > len(items) {
 		fmt.Println("View: The item does not exists.")
 		return
@@ -63,6 +64,6 @@ func markAsUndone() {
 		panic("Failed to form a JSON")
 	}
 
-	utils.WriteItems(DatabasePath, data)
+	utils.WriteItems(config.DatabasePath, data)
 	utils.PrintItem(&items[itemID], itemID, false)
 }

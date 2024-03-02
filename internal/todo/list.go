@@ -1,13 +1,14 @@
-package main
+package todo
 
 import (
 	"flag"
 	"os"
 
-	"github.com/inodaf/todo/utils"
+	"inodaf/todo/utils"
+	"inodaf/todo/internal/config"
 )
 
-func list() {
+func List() {
 
 	// When no arguments - flags - are provided, assume
 	// to list only "pending" items.
@@ -41,7 +42,7 @@ func list() {
 }
 
 func listDoneItems() {
-	for index, item := range utils.GetItems(DatabasePath) {
+	for index, item := range utils.GetItems(config.DatabasePath) {
 		if item.DoneAt != "" {
 			utils.PrintItem(&item, index, false)
 		}
@@ -49,7 +50,7 @@ func listDoneItems() {
 }
 
 func listPendingItems() {
-	for index, item := range utils.GetItems(DatabasePath) {
+	for index, item := range utils.GetItems(config.DatabasePath) {
 		if item.DoneAt != "" {
 			continue
 		}

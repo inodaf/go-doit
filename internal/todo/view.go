@@ -1,14 +1,15 @@
-package main
+package todo
 
 import (
 	"fmt"
 	"os"
 	"strconv"
 
-	"github.com/inodaf/todo/utils"
+	"inodaf/todo/internal/config"
+	"inodaf/todo/utils"
 )
 
-func view() {
+func View() {
 	if len(os.Args) <= 2 {
 		fmt.Println("View: Please specify the item ID\nExample: `$ todo view 12`")
 		return
@@ -20,7 +21,7 @@ func view() {
 		return
 	}
 
-	items := utils.GetItems(DatabasePath)
+	items := utils.GetItems(config.DatabasePath)
 
 	if itemID > len(items) {
 		fmt.Println("View: Not valid")

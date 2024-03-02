@@ -1,4 +1,4 @@
-package main
+package todo
 
 import (
 	"bufio"
@@ -8,13 +8,14 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/inodaf/todo/models"
-	"github.com/inodaf/todo/utils"
+	"inodaf/todo/internal/config"
+	"inodaf/todo/internal/models"
+	"inodaf/todo/utils"
 )
 
-func add() {
+func Add() {
 	// Start: Spawns the vim process and save the tmp.md file.
-	cmd := exec.Command("vim", TempFileName)
+	cmd := exec.Command("vim", config.TempFileName)
 
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -28,13 +29,13 @@ func add() {
 	// End
 
 	// Start: Read the tmp.txt file and get it's content
-	file, err := os.Open(TempFileName)
+	file, err := os.Open(config.TempFileName)
 	if err != nil {
 		fmt.Print("Add: Error while opening the temporary file.")
 		return
 	}
 
-	defer os.Remove(TempFileName)
+	defer os.Remove(config.TempFileName)
 	defer file.Close()
 
 	fileScanner := bufio.NewScanner(file)
@@ -70,7 +71,7 @@ func add() {
 	item.Title = title
 	item.Description = description
 
-	items := utils.GetItems(DatabasePath)
+	items := utils.GetItems(config.DatabasePath)
 	items = append(items, item)
 
 	data, err := json.Marshal(items)
@@ -78,5 +79,5 @@ func add() {
 		panic(err)
 	}
 
-	utils.WriteItems(DatabasePath, data)
+	utils.WriteItems(config.DatabasePath, data)
 }
