@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/inodaf/todo/models"
+	"inodaf/todo/internal/models"
 )
 
 func RenderTemplate(item *models.Item, index int, withDetails bool) string {

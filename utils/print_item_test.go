@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/inodaf/todo/models"
+	"inodaf/todo/internal/models"
 )
 
 func TestRenderTemplateWhenItemIsComplete(t *testing.T) {

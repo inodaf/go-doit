@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/inodaf/todo/models"
+	"inodaf/todo/internal/models"
 )
 
 func GetItems(path string) []models.Item {
