@@ -1,6 +1,11 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+var ErrMissingTitleAdd = errors.New("Models/Item: Missing 'title'")
 
 type Item struct {
 	Title       string `json:"title"`
@@ -17,8 +22,13 @@ func (i *Item) MarkAsUndone() {
 	i.DoneAt = ""
 }
 
-func NewItem() *Item {
-	return &Item{
-		CreatedAt: time.Now().Format(time.RFC822),
+func NewItem(title string) (*Item, error) {
+	if len(title) == 0 {
+		return nil, ErrMissingTitleAdd
 	}
+
+	return &Item{
+		Title:     title,
+		CreatedAt: time.Now().Format(time.RFC822),
+	}, nil
 }
