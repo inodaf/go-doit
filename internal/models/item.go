@@ -12,14 +12,17 @@ type Item struct {
 	Description string `json:"description"`
 	DoneAt      string `json:"done_at"`
 	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"update_at"`
 }
 
 func (i *Item) MarkAsDone() {
+	i.UpdatedAt = time.Now().Format(time.RFC822)
 	i.DoneAt = time.Now().Format(time.RFC822)
 }
 
 func (i *Item) MarkAsUndone() {
 	i.DoneAt = ""
+	i.UpdatedAt = time.Now().Format(time.RFC822)
 }
 
 func NewItem(title string) (*Item, error) {

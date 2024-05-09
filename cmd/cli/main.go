@@ -33,6 +33,9 @@ func main() {
 		cli.Add()
 		cli.List()
 		return
+	case "remove":
+		cli.Remove()
+		return
 	default:
 		cli.List()
 		return

@@ -1,5 +1,6 @@
-build:
+build: internal/
 	@go build -o ./bin/cli ./cmd/cli
 
-run %: build
-	@./bin/cli %
+# .PHONY: run
+# run %: build
+# 	@./bin/cli %

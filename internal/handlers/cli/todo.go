@@ -270,6 +270,41 @@ func MarkUndone() {
 	utils.PrintItem(item, itemID, false)
 }
 
+func Remove() {
+	if len(os.Args) <= 2 {
+		fmt.Println("Remove: Please specify the item IDs.")
+		return
+	}
+
+	itemID, err := strconv.Atoi(os.Args[2])
+	if err != nil {
+		fmt.Println("Remove: Please specify a valid item ID.")
+		return
+	}
+
+	err = todo.Remove(itemID, false)
+	if err == todo.ErrItemIsNotDone {
+		fmt.Println("Item is not done yet. Confirm deletion?: y/n")
+
+		var confirmation string
+		fmt.Scan(&confirmation)
+
+		if strings.ToLower(confirmation) != "y" {
+			fmt.Println("Ok, not removing!")
+			return
+		}
+
+		err = todo.Remove(itemID, true)
+	}
+
+	if err != nil {
+		fmt.Printf("Remove: Failed to remove item. Cause: %s", err.Error())
+		return
+	}
+
+	fmt.Printf("Removed item %d. \n", itemID)
+}
+
 // Helpers
 func listDoneItems() {
 	results, err := todo.ListDoneItems()

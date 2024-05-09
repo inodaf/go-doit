@@ -3,6 +3,7 @@ package todo
 import (
 	"encoding/json"
 	"errors"
+	"time"
 
 	"inodaf/todo/internal/config"
 	"inodaf/todo/internal/models"
@@ -25,6 +26,7 @@ func Edit(input EditInput) error {
 
 	// Update the item in the store.
 	items[input.ItemID] = *input.Item
+	items[input.ItemID].UpdatedAt = time.Now().Format(time.RFC822)
 
 	// Convert the struct into a JSON string.
 	data, err := json.Marshal(items)

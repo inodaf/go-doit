@@ -38,6 +38,9 @@ func RenderTemplate(item *models.Item, index int, withDetails bool) string {
 	//
 	// This is the item description.
 	if withDetails {
+		if len(item.UpdatedAt) != 0 {
+			template.WriteString(fmt.Sprintf("Updated at %s\n", item.UpdatedAt))
+		}
 		template.WriteString(fmt.Sprintf("\n%s\n", item.Description))
 	}
 

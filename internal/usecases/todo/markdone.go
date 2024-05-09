@@ -1,7 +1,6 @@
 package todo
 
 import (
-	"encoding/json"
 	"errors"
 
 	"inodaf/todo/internal/config"
@@ -20,12 +19,11 @@ func MarkAsDone(itemID int) (*models.Item, error) {
 
 	items[itemID].MarkAsDone()
 
-	data, err := json.Marshal(items)
+	err := Edit(EditInput{ItemID: itemID, Item: &items[itemID] })
 	if err != nil {
 		return nil, ErrJSONCreationFailedMarkDone
 	}
 
-	utils.WriteItems(config.DatabasePath, data)
 	return &items[itemID], nil
 }
 
@@ -37,11 +35,10 @@ func MarkAsUndone(itemID int) (*models.Item, error) {
 
 	items[itemID].MarkAsUndone()
 
-	data, err := json.Marshal(items)
+	err := Edit(EditInput{ ItemID: itemID, Item: &items[itemID] })
 	if err != nil {
 		return nil, ErrJSONCreationFailedMarkDone
 	}
 
-	utils.WriteItems(config.DatabasePath, data)
 	return &items[itemID], nil
 }
