@@ -1,10 +1,9 @@
-package utils
+package cli
 
 import (
 	"fmt"
+	"inodaf/todo/internal/pkg/models"
 	"strings"
-
-	"inodaf/todo/internal/models"
 )
 
 func RenderTemplate(item *models.Item, index int, withDetails bool) string {
@@ -35,6 +34,7 @@ func RenderTemplate(item *models.Item, index int, withDetails bool) string {
 	//
 	// E.g.: [x] #1: My item title
 	// Created at 22 Jan 24 18:02 CET
+	// Updated at 24 Jan 24 11:37 CET
 	//
 	// This is the item description.
 	if withDetails {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"inodaf/todo/internal/handlers/cli"
+	"inodaf/todo/internal/pkg/cli"
 )
 
 func main() {
@@ -15,29 +15,29 @@ func main() {
 
 	switch os.Args[1] {
 	case "list":
-		cli.List()
+		cli.HandleList()
 		return
 	case "view":
-		cli.View()
+		cli.HandleView()
 		return
 	case "done":
-		cli.MarkDone()
+		cli.HandleMarkDone()
 		return
 	case "undone":
-		cli.MarkUndone()
+		cli.HandleMarkUndone()
 		return
 	case "edit":
-		cli.Edit()
+		cli.HandleEdit()
 		return
 	case "add":
-		cli.Add()
-		cli.List()
+		cli.HandleAdd()
+		cli.HandleList()
 		return
 	case "remove":
-		cli.Remove()
+		cli.HandleRemove()
 		return
 	default:
-		cli.List()
+		cli.HandleList()
 		return
 	}
 }

@@ -1,9 +1,9 @@
-package todo
+package todos
 
 import (
 	"inodaf/todo/internal/config"
-	"inodaf/todo/internal/models"
-	"inodaf/todo/internal/utils"
+	"inodaf/todo/internal/pkg/database"
+	"inodaf/todo/internal/pkg/models"
 )
 
 type result struct {
@@ -14,7 +14,7 @@ type result struct {
 func ListDoneItems() ([]result, error) {
 	var filtered = make([]result, 0)
 
-	for index, item := range utils.GetItems(config.DatabasePath) {
+	for index, item := range database.GetItems(config.DatabasePath) {
 		if item.DoneAt != "" {
 			filtered = append(filtered, result{Item: &item, Index: index})
 		}
@@ -26,7 +26,7 @@ func ListDoneItems() ([]result, error) {
 func ListPendingItems() ([]result, error) {
 	var filtered = make([]result, 0)
 
-	for index, item := range utils.GetItems(config.DatabasePath) {
+	for index, item := range database.GetItems(config.DatabasePath) {
 		if item.DoneAt != "" {
 			continue
 		}

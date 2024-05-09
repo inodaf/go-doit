@@ -1,4 +1,4 @@
 package config
 
-const DatabasePath = "./store/current.json"
+const DatabasePath = "./data/current.json"
 const TempFileName = "tmp.md"

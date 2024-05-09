@@ -1,17 +1,17 @@
-package todo
+package todos
 
 import (
 	"encoding/json"
 	"errors"
 	"inodaf/todo/internal/config"
-	"inodaf/todo/internal/utils"
+	"inodaf/todo/internal/pkg/database"
 )
 
 var ErrNotFoundItemRemove = errors.New("remove: the item does not exists")
 var ErrItemIsNotDone = errors.New("remove: the item is not done, confirm removal")
 
 func Remove(itemID int, force bool) error {
-	items := utils.GetItems(config.DatabasePath)
+	items := database.GetItems(config.DatabasePath)
 	if itemID > len(items)-1 {
 		return ErrNotFoundItemRemove
 	}
@@ -30,6 +30,6 @@ func Remove(itemID int, force bool) error {
 	}
 
 	// Save the newly updated JSON file.
-	utils.WriteItems(config.DatabasePath, data)
+	database.WriteItems(config.DatabasePath, data)
 	return nil
 }

@@ -1,12 +1,12 @@
-package todo
+package todos
 
 import (
 	"encoding/json"
 	"errors"
 
 	"inodaf/todo/internal/config"
-	"inodaf/todo/internal/models"
-	"inodaf/todo/internal/utils"
+	"inodaf/todo/internal/pkg/database"
+	"inodaf/todo/internal/pkg/models"
 )
 
 var ErrJSONCreationFailedAdd = errors.New("Add: Could not build JSON string")
@@ -23,13 +23,13 @@ func Add(input AddInput) error {
 	}
 
 	item.Description = input.Description
-	items := utils.GetItems(config.DatabasePath)
+	items := database.GetItems(config.DatabasePath)
 
 	data, err := json.Marshal(append(items, *item))
 	if err != nil {
 		return ErrJSONCreationFailedAdd
 	}
 
-	utils.WriteItems(config.DatabasePath, data)
+	database.WriteItems(config.DatabasePath, data)
 	return nil
 }

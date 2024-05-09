@@ -10,11 +10,10 @@ import (
 	"strings"
 
 	"inodaf/todo/internal/config"
-	"inodaf/todo/internal/usecases/todo"
-	"inodaf/todo/internal/utils"
+	"inodaf/todo/internal/todos"
 )
 
-func View() {
+func HandleView() {
 	if len(os.Args) <= 2 {
 		fmt.Println("View: Please specify the item ID\nExample: `$ todo view 12`")
 		return
@@ -26,16 +25,16 @@ func View() {
 		return
 	}
 
-	item, err := todo.View(itemID)
+	item, err := todos.View(itemID)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	utils.PrintItem(item, itemID, true)
+	PrintItem(item, itemID, true)
 }
 
-func List() {
+func HandleList() {
 	// When no arguments - flags - are provided, assume
 	// to list only "pending" items.
 	if len(os.Args) <= 2 {
@@ -51,7 +50,12 @@ func List() {
 	var options *flag.FlagSet = flag.NewFlagSet(os.Args[2], flag.ExitOnError)
 	var listAll *bool = options.Bool("a", false, "List pending and done items")
 	var onlyDone *bool = options.Bool("c", false, "List done items")
-	options.Parse(os.Args[2:])
+
+	err := options.Parse(os.Args[2:])
+	if err != nil {
+		fmt.Println("List: Failed to parse flags.")
+		return
+	}
 
 	if *onlyDone {
 		listDoneItems()
@@ -67,7 +71,7 @@ func List() {
 	listDoneItems()
 }
 
-func Add() {
+func HandleAdd() {
 	// Start: Spawns the vim process and save the tmp.md file.
 	cmd := exec.Command("vim", config.TempFileName)
 
@@ -121,14 +125,14 @@ func Add() {
 	}
 	var description string = descriptionBuilder.String()
 
-	err = todo.Add(todo.AddInput{Title: title, Description: description})
+	err = todos.Add(todos.AddInput{Title: title, Description: description})
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 }
 
-func Edit() {
+func HandleEdit() {
 	// @TODO: Fallback to last item in case the ID was not specified.
 	if len(os.Args) <= 2 {
 		fmt.Println("Edit: Please specify the item ID\nExample: `$ todo edit 12`")
@@ -144,7 +148,7 @@ func Edit() {
 	}
 
 	// Access the specified item given its ID.
-	item, err := todo.View(itemID)
+	item, err := todos.View(itemID)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -218,17 +222,17 @@ func Edit() {
 	}
 	item.Description = descriptionBuilder.String()
 
-	err = todo.Edit(todo.EditInput{ItemID: itemID, Item: item})
+	err = todos.Edit(todos.EditInput{ItemID: itemID, Item: item})
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
 	fmt.Println("edit: changes saved")
-	utils.PrintItem(item, itemID, false)
+	PrintItem(item, itemID, false)
 }
 
-func MarkDone() {
+func HandleMarkDone() {
 	if len(os.Args) <= 2 {
 		fmt.Println("Mark as Done: Please specify the item ID\nExample: `$ todo done 12`.")
 		return
@@ -240,16 +244,16 @@ func MarkDone() {
 		return
 	}
 
-	item, err := todo.MarkAsDone(itemID)
+	item, err := todos.MarkAsDone(itemID)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	utils.PrintItem(item, itemID, false)
+	PrintItem(item, itemID, false)
 }
 
-func MarkUndone() {
+func HandleMarkUndone() {
 	if len(os.Args) <= 2 {
 		fmt.Println("Mark as Undone: Please specify the item ID\nExample: `$ todo undone 12`.")
 		return
@@ -261,16 +265,16 @@ func MarkUndone() {
 		return
 	}
 
-	item, err := todo.MarkAsUndone(itemID)
+	item, err := todos.MarkAsUndone(itemID)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	utils.PrintItem(item, itemID, false)
+	PrintItem(item, itemID, false)
 }
 
-func Remove() {
+func HandleRemove() {
 	if len(os.Args) <= 2 {
 		fmt.Println("Remove: Please specify the item IDs.")
 		return
@@ -282,11 +286,11 @@ func Remove() {
 		return
 	}
 
-	err = todo.Remove(itemID, false)
-	if err == todo.ErrItemIsNotDone {
-		fmt.Println("Item is not done yet. Confirm deletion?: y/n")
-
+	err = todos.Remove(itemID, false)
+	if err == todos.ErrItemIsNotDone {
 		var confirmation string
+
+		fmt.Println("Item is not done yet. Confirm deletion?: y/n")
 		fmt.Scan(&confirmation)
 
 		if strings.ToLower(confirmation) != "y" {
@@ -294,7 +298,7 @@ func Remove() {
 			return
 		}
 
-		err = todo.Remove(itemID, true)
+		err = todos.Remove(itemID, true)
 	}
 
 	if err != nil {
@@ -307,25 +311,25 @@ func Remove() {
 
 // Helpers
 func listDoneItems() {
-	results, err := todo.ListDoneItems()
+	results, err := todos.ListDoneItems()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
 	for _, result := range results {
-		utils.PrintItem(result.Item, result.Index, false)
+		PrintItem(result.Item, result.Index, false)
 	}
 }
 
 func listPendingItems() {
-	results, err := todo.ListPendingItems()
+	results, err := todos.ListPendingItems()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
 	for _, result := range results {
-		utils.PrintItem(result.Item, result.Index, false)
+		PrintItem(result.Item, result.Index, false)
 	}
 }

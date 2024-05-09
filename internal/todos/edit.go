@@ -1,4 +1,4 @@
-package todo
+package todos
 
 import (
 	"encoding/json"
@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"inodaf/todo/internal/config"
-	"inodaf/todo/internal/models"
-	"inodaf/todo/internal/utils"
+	"inodaf/todo/internal/pkg/database"
+	"inodaf/todo/internal/pkg/models"
 )
 
 var ErrNotFoundItemEdit = errors.New("edit: the \"item\" does not exists")
@@ -19,7 +19,7 @@ type EditInput struct {
 }
 
 func Edit(input EditInput) error {
-	items := utils.GetItems(config.DatabasePath)
+	items := database.GetItems(config.DatabasePath)
 	if input.ItemID > len(items) {
 		return ErrNotFoundItemEdit
 	}
@@ -35,6 +35,6 @@ func Edit(input EditInput) error {
 	}
 
 	// Save the newly updated JSON file.
-	utils.WriteItems(config.DatabasePath, data)
+	database.WriteItems(config.DatabasePath, data)
 	return nil
 }

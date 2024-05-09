@@ -1,10 +1,9 @@
-package utils
+package database
 
 import (
 	"encoding/json"
+	"inodaf/todo/internal/pkg/models"
 	"os"
-
-	"inodaf/todo/internal/models"
 )
 
 func GetItems(path string) []models.Item {
