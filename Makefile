@@ -1,6 +1,11 @@
-build: internal/
-	@go build -o ./bin/todo ./cmd/todo
+# Tasks
+.PHONY: all
+all : ./bin/todo
 
-# .PHONY: run
-# run %: build
-# 	@./bin/cli %
+.PHONY: clean
+clean :
+	@rm -rf ./bin
+
+# Recipes
+./bin/todo: $(shell find internal/**/*.go)
+	@go build -o ./bin/todo ./cmd/todo
