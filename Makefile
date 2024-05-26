@@ -1,11 +1,11 @@
 # Tasks
 .PHONY: all
-all : ./bin/todo
+all: ./bin/todo
 
 .PHONY: clean
-clean :
+clean:
 	@rm -rf ./bin
 
 # Recipes
-./bin/todo: $(shell find internal/**/*.go)
+./bin/todo : $(shell find . -name '*.go')
 	@go build -o ./bin/todo ./cmd/todo

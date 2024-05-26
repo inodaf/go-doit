@@ -31,7 +31,7 @@ func HandleView() {
 		return
 	}
 
-	PrintItem(item, itemID, true)
+	PrintItem(item, true)
 }
 
 func HandleList() {
@@ -86,7 +86,7 @@ func HandleAdd() {
 	}
 	// End
 
-	// Start: Read the tmp.txt file and get it's content
+	// Start: Read the tmp.txt file and get its content
 	file, err := os.Open(config.TempFileName)
 	if err != nil {
 		fmt.Print("Add: Error while opening the temporary file.")
@@ -222,14 +222,14 @@ func HandleEdit() {
 	}
 	item.Description = descriptionBuilder.String()
 
-	err = todos.Edit(todos.EditInput{ItemID: itemID, Item: item})
+	err = todos.Edit(todos.EditInput{Item: item})
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
 	fmt.Println("edit: changes saved")
-	PrintItem(item, itemID, false)
+	PrintItem(item, false)
 }
 
 func HandleMarkDone() {
@@ -250,7 +250,7 @@ func HandleMarkDone() {
 		return
 	}
 
-	PrintItem(item, itemID, false)
+	PrintItem(item, false)
 }
 
 func HandleMarkUndone() {
@@ -271,7 +271,7 @@ func HandleMarkUndone() {
 		return
 	}
 
-	PrintItem(item, itemID, false)
+	PrintItem(item, false)
 }
 
 func HandleRemove() {
@@ -311,25 +311,25 @@ func HandleRemove() {
 
 // Helpers
 func listDoneItems() {
-	results, err := todos.ListDoneItems()
+	items, err := todos.ListDoneItems()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	for _, result := range results {
-		PrintItem(result.Item, result.Index, false)
+	for _, item := range items {
+		PrintItem(item, false)
 	}
 }
 
 func listPendingItems() {
-	results, err := todos.ListPendingItems()
+	items, err := todos.ListPendingItems()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	for _, result := range results {
-		PrintItem(result.Item, result.Index, false)
+	for _, item := range items {
+		PrintItem(item, false)
 	}
 }

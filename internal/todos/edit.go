@@ -1,40 +1,36 @@
 package todos
 
 import (
-	"encoding/json"
 	"errors"
 	"time"
 
-	"inodaf/todo/internal/config"
 	"inodaf/todo/internal/pkg/database"
 	"inodaf/todo/internal/pkg/models"
 )
 
-var ErrNotFoundItemEdit = errors.New("edit: the \"item\" does not exists")
-var ErrJSONCreationFailedEdit = errors.New("edit: could not build the JSON string")
+var (
+	ErrNotFoundItemEdit       = errors.New("edit: item does not exists")
+	ErrJSONCreationFailedEdit = errors.New("edit: could not build the JSON string")
+)
 
 type EditInput struct {
-	ItemID int
 	Item   *models.Item
 }
 
 func Edit(input EditInput) error {
-	items := database.GetItems(config.DatabasePath)
-	if input.ItemID > len(items) {
+	var count int
+
+	err := database.DB.QueryRow("SELECT count(id) FROM todos WHERE id = ?", input.Item.Id).Scan(&count)
+	if err != nil || count == 0 {
 		return ErrNotFoundItemEdit
 	}
 
-	// Update the item in the store.
-	items[input.ItemID] = *input.Item
-	items[input.ItemID].UpdatedAt = time.Now().Format(time.RFC822)
+	input.Item.UpdatedAt = time.Now().Format(time.DateTime)
 
-	// Convert the struct into a JSON string.
-	data, err := json.Marshal(items)
+	_, err = database.DB.Exec("UPDATE todos SET title = ?, description = ?, updated_at = ?, done_at = ? WHERE id = ?", input.Item.Title, input.Item.Description, input.Item.UpdatedAt, input.Item.DoneAt, input.Item.Id)
 	if err != nil {
-		return ErrJSONCreationFailedEdit
+		return err
 	}
 
-	// Save the newly updated JSON file.
-	database.WriteItems(config.DatabasePath, data)
 	return nil
 }

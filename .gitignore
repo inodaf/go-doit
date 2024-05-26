@@ -1,2 +1,4 @@
 # Built binaries
 bin/
+
+data/*.db

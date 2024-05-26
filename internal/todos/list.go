@@ -1,37 +1,53 @@
 package todos
 
 import (
-	"inodaf/todo/internal/config"
+	"errors"
 	"inodaf/todo/internal/pkg/database"
 	"inodaf/todo/internal/pkg/models"
 )
 
-type result struct {
-	Item  *models.Item
-	Index int
-}
+var (
+	ErrListingItems = errors.New("list: unable to list items")
+)
 
-func ListDoneItems() ([]result, error) {
-	var filtered = make([]result, 0)
+func ListDoneItems() ([]*models.Item, error) {
+	var items []*models.Item
 
-	for index, item := range database.GetItems(config.DatabasePath) {
-		if item.DoneAt != "" {
-			filtered = append(filtered, result{Item: &item, Index: index})
+	rows, err := database.DB.Query("SELECT * FROM todos WHERE done_at != '' ORDER BY done_at DESC")
+	if err != nil {
+		return nil, ErrListingItems
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item models.Item
+		err := rows.Scan(&item.Id, &item.Title, &item.Description, &item.CreatedAt, &item.UpdatedAt, &item.DoneAt)
+		if err != nil {
+			return nil, err
 		}
+		items = append(items, &item)
 	}
 
-	return filtered, nil
+	return items, nil
 }
 
-func ListPendingItems() ([]result, error) {
-	var filtered = make([]result, 0)
+func ListPendingItems() ([]*models.Item, error) {
+	var items []*models.Item
 
-	for index, item := range database.GetItems(config.DatabasePath) {
-		if item.DoneAt != "" {
-			continue
+	rows, err := database.DB.Query("SELECT * FROM todos WHERE done_at = '' ORDER BY created_at DESC")
+	if err != nil {
+		return nil, ErrListingItems
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item models.Item
+		err := rows.Scan(&item.Id, &item.Title, &item.Description, &item.CreatedAt, &item.UpdatedAt, &item.DoneAt)
+		if err != nil {
+			return nil, err
 		}
-		filtered = append(filtered, result{Item: &item, Index: index})
+		items = append(items, &item)
 	}
 
-	return filtered, nil
+	return items, nil
 }

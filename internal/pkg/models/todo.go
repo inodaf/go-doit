@@ -5,24 +5,25 @@ import (
 	"time"
 )
 
-var ErrMissingTitleAdd = errors.New("Models/Item: Missing 'title'")
+var ErrMissingTitleAdd = errors.New("models/item: missing 'title'")
 
 type Item struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	DoneAt      string `json:"done_at"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"update_at"`
+	Id          int `json:"id" sql:"id"`
+	Title       string `json:"title" sql:"title"`
+	Description string `json:"description" sql:"description"`
+	DoneAt      string `json:"done_at" sql:"done_at"`
+	CreatedAt   string `json:"created_at" sql:"created_at"`
+	UpdatedAt   string `json:"update_at" sql:"update_at"`
 }
 
 func (i *Item) MarkAsDone() {
-	i.UpdatedAt = time.Now().Format(time.RFC822)
-	i.DoneAt = time.Now().Format(time.RFC822)
+	i.UpdatedAt = time.Now().Format(time.DateTime)
+	i.DoneAt = time.Now().Format(time.DateTime)
 }
 
 func (i *Item) MarkAsUndone() {
 	i.DoneAt = ""
-	i.UpdatedAt = time.Now().Format(time.RFC822)
+	i.UpdatedAt = time.Now().Format(time.DateTime)
 }
 
 func NewItem(title string) (*Item, error) {
@@ -32,6 +33,6 @@ func NewItem(title string) (*Item, error) {
 
 	return &Item{
 		Title:     title,
-		CreatedAt: time.Now().Format(time.RFC822),
+		CreatedAt: time.Now().Format(time.DateTime),
 	}, nil
 }

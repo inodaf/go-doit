@@ -1,15 +1,13 @@
 package todos
 
 import (
-	"encoding/json"
 	"errors"
-
-	"inodaf/todo/internal/config"
 	"inodaf/todo/internal/pkg/database"
 	"inodaf/todo/internal/pkg/models"
+	"log"
 )
 
-var ErrJSONCreationFailedAdd = errors.New("Add: Could not build JSON string")
+var ErrSaveNewItemFailedAdd = errors.New("add: could not save new item")
 
 type AddInput struct {
 	Description string
@@ -23,13 +21,18 @@ func Add(input AddInput) error {
 	}
 
 	item.Description = input.Description
-	items := database.GetItems(config.DatabasePath)
 
-	data, err := json.Marshal(append(items, *item))
+	stmt, err := database.DB.Prepare("INSERT INTO todos(title, description, created_at) VALUES(?, ?, ?)")
 	if err != nil {
-		return ErrJSONCreationFailedAdd
+		log.Println("statement prepare error: ", err.Error())
+		return ErrSaveNewItemFailedAdd
 	}
 
-	database.WriteItems(config.DatabasePath, data)
+	_, err = stmt.Exec(item.Title, item.Description, item.CreatedAt)
+	if err != nil {
+		log.Println("statement execution error: ", err.Error())
+		return ErrSaveNewItemFailedAdd
+	}
+
 	return nil
 }

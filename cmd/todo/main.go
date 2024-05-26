@@ -2,18 +2,36 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"inodaf/todo/internal/pkg/cli"
+	"inodaf/todo/internal/pkg/database"
 )
 
 func main() {
+	db, err := database.Connect()
+	if err != nil {
+		log.Fatal("todo: could not connect to database")
+	}
+	defer db.Close()
+	database.DB = db
+
+	// Apply the Database Schema
+	err = database.Prepare(db)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	if len(os.Args) <= 1 {
-		fmt.Println("Please, use one of the available actions: \n- add\n- list \n- edit\n- done\n- undone\n- view")
+		cli.HandleList()
 		return
 	}
 
 	switch os.Args[1] {
+	case "help":
+		fmt.Println("Available actions: \n- add\n- list \n- edit\n- done\n- undone\n- view")
+		return
 	case "list":
 		cli.HandleList()
 		return

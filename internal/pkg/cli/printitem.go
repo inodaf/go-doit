@@ -2,11 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"inodaf/todo/internal/config"
 	"inodaf/todo/internal/pkg/models"
 	"strings"
+	"time"
 )
 
-func RenderTemplate(item *models.Item, index int, withDetails bool) string {
+func RenderTemplate(item *models.Item, withDetails bool) string {
 	var template strings.Builder
 	var completed string
 
@@ -20,14 +22,16 @@ func RenderTemplate(item *models.Item, index int, withDetails bool) string {
 	// When item is marked as "done",
 	// add the "x" to symbolize completion and
 	// append the line "Done at <time>".
-	if item.DoneAt != "" {
+	if len(item.DoneAt) != 0 {
 		completed = "x"
-		template.WriteString(fmt.Sprintf("Done at %s\n", item.DoneAt))
+		doneAt, _ := time.Parse(time.DateTime, item.DoneAt)
+		template.WriteString(fmt.Sprintf("Done at %s\n", doneAt.Format(config.DisplayTimeFormat)))
 	}
 
 	// Append the line "Created at <time>"
 	// for all rendering cases.
-	template.WriteString(fmt.Sprintf("Created at %s\n", item.CreatedAt))
+	createdAt, _ := time.Parse(time.DateTime, item.CreatedAt)
+	template.WriteString(fmt.Sprintf("Created at %s\n", createdAt.Format(config.DisplayTimeFormat)))
 
 	// When rendering the view with details,
 	// show the item's description.
@@ -39,14 +43,15 @@ func RenderTemplate(item *models.Item, index int, withDetails bool) string {
 	// This is the item description.
 	if withDetails {
 		if len(item.UpdatedAt) != 0 {
-			template.WriteString(fmt.Sprintf("Updated at %s\n", item.UpdatedAt))
+			updatedAt, _ := time.Parse(time.DateTime, item.UpdatedAt)
+			template.WriteString(fmt.Sprintf("Updated at %s\n", updatedAt.Format(config.DisplayTimeFormat)))
 		}
 		template.WriteString(fmt.Sprintf("\n%s\n", item.Description))
 	}
 
-	return fmt.Sprintf(template.String(), completed, index, item.Title)
+	return fmt.Sprintf(template.String(), completed, item.Id, item.Title)
 }
 
-func PrintItem(item *models.Item, index int, compact bool) {
-	fmt.Print(RenderTemplate(item, index, compact))
+func PrintItem(item *models.Item, compact bool) {
+	fmt.Print(RenderTemplate(item, compact))
 }
