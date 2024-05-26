@@ -2,15 +2,36 @@ package database
 
 import (
 	"database/sql"
+	"encoding/json"
 	"inodaf/todo/internal/config"
 	"inodaf/todo/internal/pkg/models"
 	"log"
+	"os"
 	"sync"
 )
 
+func getJSONItems(path string) []models.Item {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	var items []models.Item
+	var decoder *json.Decoder = json.NewDecoder(file)
+
+	err = decoder.Decode(&items)
+	if err != nil {
+		panic(err)
+	}
+
+	return items
+}
+
+
 func Migrate(db *sql.DB) {
 	log.Println("💿 Starting JSON to SQL migration")
-	items := GetItems(config.DatabasePath)
+	items := getJSONItems(config.DatabasePath)
 	var wg sync.WaitGroup
 
 	stmt, err := db.Prepare("INSERT INTO todos(title, description, created_at, updated_at, done_at) VALUES(?, ?, ?, ?, ?)")

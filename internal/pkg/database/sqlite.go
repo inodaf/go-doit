@@ -2,19 +2,18 @@ package database
 
 import (
 	"database/sql"
+	"inodaf/todo/internal/config"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// What happens if the executable program is outside of the repository?
-// Should we create the DB in a temp location in the Home directory?
-const defaultSourceName = "./data/live.db"
+func NewSQLiteStore(params ...string) (*sql.DB, error) {
+	var sourceName string
 
-func Connect(params ...string) (*sql.DB, error) {
-	var sourceName string;
-
+	// What happens if the executable program is outside of the repository?
+	// Should we create the DB in a temp location in the Home directory?
 	if len(params) == 0 {
-		sourceName = defaultSourceName
+		sourceName = config.DatabasePath
 	} else {
 		sourceName = params[0]
 	}
@@ -31,4 +30,3 @@ func Connect(params ...string) (*sql.DB, error) {
 
 	return db, nil
 }
-

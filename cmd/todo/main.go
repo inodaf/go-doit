@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	db, err := database.Connect()
+	db, err := database.NewSQLiteStore()
 	if err != nil {
 		log.Fatal("todo: could not connect to database")
 	}

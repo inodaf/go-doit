@@ -2,6 +2,8 @@ package config
 
 import "time"
 
-const DatabasePath = "./data/current.json"
-const TempFileName = "tmp.md"
-const DisplayTimeFormat = time.RFC822
+const (
+	TempFileName      = "tmp.md"
+	DatabasePath      = "./data/live.db"
+	DisplayTimeFormat = time.RFC822
+)
