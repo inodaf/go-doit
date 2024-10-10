@@ -20,7 +20,7 @@ func Remove(itemID int, force bool) error {
 		return ErrNotFoundItemRemove
 	}
 
-	if len(item.DoneAt) == 0 && !force {
+	if item.DoneAt.IsZero() && !force {
 		return ErrItemIsNotDone
 	}
 

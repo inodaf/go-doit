@@ -14,7 +14,7 @@ var (
 )
 
 type EditInput struct {
-	Item   *models.Item
+	Item *models.Item
 }
 
 func Edit(input EditInput) error {
@@ -25,7 +25,7 @@ func Edit(input EditInput) error {
 		return ErrNotFoundItemEdit
 	}
 
-	input.Item.UpdatedAt = time.Now().Format(time.DateTime)
+	input.Item.UpdatedAt = time.Now()
 
 	_, err = database.DB.Exec("UPDATE todos SET title = ?, description = ?, updated_at = ?, done_at = ? WHERE id = ?", input.Item.Title, input.Item.Description, input.Item.UpdatedAt, input.Item.DoneAt, input.Item.Id)
 	if err != nil {

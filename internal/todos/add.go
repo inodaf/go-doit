@@ -4,7 +4,7 @@ import (
 	"errors"
 	"inodaf/todo/internal/pkg/database"
 	"inodaf/todo/internal/pkg/models"
-	"log"
+	"time"
 )
 
 var ErrSaveNewItemFailedAdd = errors.New("add: could not save new item")
@@ -22,15 +22,13 @@ func Add(input AddInput) error {
 
 	item.Description = input.Description
 
-	stmt, err := database.DB.Prepare("INSERT INTO todos(title, description, created_at) VALUES(?, ?, ?)")
+	stmt, err := database.DB.Prepare("INSERT INTO todos(title, description, created_at, updated_at, done_at) VALUES(?, ?, ?, ?, ?)")
 	if err != nil {
-		log.Println("statement prepare error: ", err.Error())
 		return ErrSaveNewItemFailedAdd
 	}
 
-	_, err = stmt.Exec(item.Title, item.Description, item.CreatedAt)
+	_, err = stmt.Exec(item.Title, item.Description, item.CreatedAt.Format(time.DateTime), item.UpdatedAt.Format(time.DateTime), item.DoneAt.Format(time.DateTime))
 	if err != nil {
-		log.Println("statement execution error: ", err.Error())
 		return ErrSaveNewItemFailedAdd
 	}
 

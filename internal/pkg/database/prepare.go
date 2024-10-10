@@ -9,9 +9,9 @@ var schema string = `CREATE TABLE IF NOT EXISTS todos (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	title TEXT NOT NULL,
 	description TEXT,
-	created_at TEXT NOT NULL,
-	updated_at TEXT,
-	done_at TEXT
+	created_at DATETIME NOT NULL,
+	updated_at DATETIME,
+	done_at DATETIME
 );`
 
 func Prepare(db *sql.DB) error {
