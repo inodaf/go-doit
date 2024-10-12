@@ -8,12 +8,12 @@ import (
 var ErrMissingTitleAdd = errors.New("models/item: missing 'title'")
 
 type Item struct {
-	Id          int       `json:"id" sql:"id"`
-	Title       string    `json:"title" sql:"title"`
-	Description string    `json:"description" sql:"description"`
-	DoneAt      time.Time `json:"done_at" sql:"done_at"`
-	CreatedAt   time.Time `json:"created_at" sql:"created_at"`
-	UpdatedAt   time.Time `json:"update_at" sql:"update_at"`
+	Id          int
+	Title       string
+	Description string
+	DoneAt      time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func (i *Item) MarkAsDone() {
