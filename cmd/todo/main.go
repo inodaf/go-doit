@@ -30,7 +30,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "help":
-		fmt.Println("Available actions: \n- add\n- list \n- edit\n- done\n- undone\n- view")
+		fmt.Println("Available actions: \n- add\n- list \n- edit\n- done\n- undone\n- view\n- remove")
 		return
 	case "list":
 		cli.HandleList()
