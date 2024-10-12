@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -72,28 +74,34 @@ func HandleList() {
 }
 
 func HandleAdd() {
-	// Start: Spawns the vim process and save the tmp.md file.
-	cmd := exec.Command("vim", config.TempFileName)
+	tempDir, err := os.MkdirTemp("", "godoit")
+	if err != nil {
+		log.Println("Add: Could not create temporary file.", err.Error())
+		return
+	}
+	defer os.RemoveAll(tempDir)
 
+	tmpFilePath := filepath.Join(tempDir, config.TempFileName)
+
+	// Spawns the $EDITOR process and save the temp file.
+	cmd := exec.Command("vim", tmpFilePath)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
-		fmt.Print("Add: \"Editor\" process did not finish successfully")
-		return
-	}
-	// End
-
-	// Start: Read the tmp.txt file and get its content
-	file, err := os.Open(config.TempFileName)
-	if err != nil {
-		fmt.Print("Add: Error while opening the temporary file.")
+		log.Println("Add: \"Editor\" process did not finish successfully")
 		return
 	}
 
-	defer os.Remove(config.TempFileName)
+	// Read the temp file and get its content
+	file, err := os.Open(tmpFilePath)
+	if err != nil {
+		log.Println("Add: Error while opening the temporary file.")
+		return
+	}
+
 	defer file.Close()
 
 	fileScanner := bufio.NewScanner(file)
@@ -103,7 +111,7 @@ func HandleAdd() {
 	// and it is "required" to create a new item.
 	var title string = fileScanner.Text()
 	if len(title) == 0 {
-		fmt.Print("Error: Items must have a title.\n")
+		log.Println("Error: Items must have a title.")
 		return
 	}
 
@@ -127,7 +135,7 @@ func HandleAdd() {
 
 	err = todos.Add(todos.AddInput{Title: title, Description: description})
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 }
@@ -155,18 +163,25 @@ func HandleEdit() {
 	}
 
 	// Generate the text content to be put in the temporary file.
-	content := fmt.Sprintf("%s\n%s", item.Title, item.Description)
 	tempFileName := fmt.Sprintf("tmp-edit-%d.md", itemID)
+	content := fmt.Sprintf("%s\n%s", item.Title, item.Description)
 
 	// Create a new temp file for editing.
-	file, err := os.OpenFile(tempFileName, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	tempDir, err := os.MkdirTemp("", "godoit")
+	if err != nil {
+		log.Println("Add: Could not create the temporary directory.")
+		return
+	}
+	defer os.RemoveAll(tempDir)
+
+	filePath := filepath.Join(tempDir, tempFileName)
+	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		fmt.Println("Edit: Error while creating the temporary editable file.")
 		return
 	}
 
 	// When function is finished/errored, make sure to close and remove the file.
-	defer os.Remove(tempFileName)
 	defer file.Close()
 
 	// Write contents to the file.
@@ -176,7 +191,7 @@ func HandleEdit() {
 	}
 
 	// Open the temp file using Vim.
-	cmd := exec.Command("vim", tempFileName)
+	cmd := exec.Command("vim", filePath)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -186,7 +201,7 @@ func HandleEdit() {
 	}
 
 	// Reopen the file to get the last contents.
-	file, err = os.Open(tempFileName)
+	file, err = os.Open(filePath)
 	if err != nil {
 		fmt.Println("Edit: Error while opening the temporary file.")
 		return
@@ -317,6 +332,11 @@ func listDoneItems() {
 		return
 	}
 
+	if len(items) == 0 {
+		fmt.Println("📋 Completed tasks will appear here")
+		return
+	}
+
 	for _, item := range items {
 		PrintItem(item, false)
 	}
@@ -326,6 +346,11 @@ func listPendingItems() {
 	items, err := todos.ListPendingItems()
 	if err != nil {
 		fmt.Println(err.Error())
+		return
+	}
+
+	if len(items) == 0 {
+		fmt.Println("✅ No tasks")
 		return
 	}
 

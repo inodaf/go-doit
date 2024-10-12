@@ -10,10 +10,12 @@ import (
 func NewSQLiteStore(params ...string) (*sql.DB, error) {
 	var sourceName string
 
-	// What happens if the executable program is outside of the repository?
-	// Should we create the DB in a temp location in the Home directory?
 	if len(params) == 0 {
-		sourceName = config.DatabasePath
+		if path, err := config.GetDatabasePath(); err != nil {
+			return nil, err
+		} else {
+			sourceName = path
+		}
 	} else {
 		sourceName = params[0]
 	}
