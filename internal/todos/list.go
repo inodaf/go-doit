@@ -14,7 +14,7 @@ var (
 func ListDoneItems() ([]*models.Item, error) {
 	var items []*models.Item
 
-	rows, err := database.DB.Query("SELECT * FROM todos WHERE done_at != ? ORDER BY done_at DESC", time.Time{}.Format(time.DateTime))
+	rows, err := database.DB.Query("SELECT * FROM todos WHERE done_at != ? ORDER BY done_at DESC", time.Time{})
 	if err != nil {
 		return nil, ErrListingItems
 	}
@@ -35,7 +35,7 @@ func ListDoneItems() ([]*models.Item, error) {
 func ListPendingItems() ([]*models.Item, error) {
 	var items []*models.Item
 
-	rows, err := database.DB.Query("SELECT * FROM todos WHERE done_at = ? ORDER BY created_at DESC", time.Time{}.Format(time.DateTime))
+	rows, err := database.DB.Query("SELECT * FROM todos WHERE done_at = ? ORDER BY created_at DESC", time.Time{})
 	if err != nil {
 		return nil, ErrListingItems
 	}
